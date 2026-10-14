@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>지구촌 우편함</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;padding:0}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+
+/* Layout: a sorting desk — one airmail postcard in the middle, five coloured mailboxes along the bottom edge. */
+:root{
+  --paper:#E8EDF1; --paper-2:#DCE3E9; --card:#FFFFFF; --ink:#1B2735; --muted:#566676; --line:#C5CFD8;
+  --air-r:#C8402F; --air-b:#2F5DA8;
+  --c-person:#2B8A57; --c-company:#C26E17; --c-nation:#2F5DA8; --c-intl:#147F8E; --c-ngo:#B83E66;
+  --ok:#2B8A57; --no:#C8402F; --on-c:#FFFFFF;
+  --shadow:0 1px 0 rgba(27,39,53,.06), 0 14px 32px -14px rgba(27,39,53,.38);
+  --f-display:"Jua","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10161D; --paper-2:#17202A; --card:#1E2833; --ink:#E4EAF0; --muted:#97A6B5; --line:#2E3C4A;
+    --air-r:#E06A58; --air-b:#6D95DA;
+    --c-person:#4DB37C; --c-company:#E39A4B; --c-nation:#7AA0E0; --c-intl:#43B8C6; --c-ngo:#E26E95;
+    --ok:#4DB37C; --no:#E06A58; --on-c:#0E141A;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 14px 32px -14px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10161D; --paper-2:#17202A; --card:#1E2833; --ink:#E4EAF0; --muted:#97A6B5; --line:#2E3C4A;
+  --air-r:#E06A58; --air-b:#6D95DA;
+  --c-person:#4DB37C; --c-company:#E39A4B; --c-nation:#7AA0E0; --c-intl:#43B8C6; --c-ngo:#E26E95;
+  --ok:#4DB37C; --no:#E06A58; --on-c:#0E141A;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 14px 32px -14px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  background-image:radial-gradient(var(--line) 1px, transparent 1.2px);background-size:22px 22px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--air-b);outline-offset:3px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.2}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+.screen{min-height:100%;padding-inline:clamp(16px,3vw,40px);padding-block:clamp(16px,3vh,32px)}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+/* back link to the archive list */
+.back{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700;color:var(--muted);text-decoration:none;
+  border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px}
+.back:hover{color:var(--ink);border-color:var(--ink)}
+
+/* ---------- Setup ---------- */
+.intro{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;align-items:start}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.intro h1{font-size:clamp(2.6rem,6vw,4.4rem);margin-top:6px}
+.intro h1 span{color:var(--air-r)}
+.lede{font-size:1.1rem;max-width:34em;margin:12px 0 0}
+.howto{margin:18px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;color:var(--muted)}
+.howto li{display:flex;gap:10px;align-items:baseline}
+.howto b{font-family:var(--f-num);color:var(--ink);font-weight:600}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:18px}
+.panel h2{font-size:1.4rem}
+.field{display:flex;flex-direction:column;gap:8px}
+.field > span{font-size:.85rem;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.toggles{display:flex;flex-wrap:wrap;gap:16px}
+.toggles label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.toggles input{width:18px;height:18px;accent-color:var(--air-b)}
+.start{font-family:var(--f-display);font-size:1.5rem;border:0;border-radius:12px;padding:14px 20px;background:var(--air-r);color:#fff;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--air-r) 60%,#000)}
+.start:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--air-r) 60%,#000)}
+
+.legend-title{font-size:1.25rem;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.legend-title small{font-family:var(--f-body);font-size:.9rem;color:var(--muted)}
+
+/* ---------- Bins (mailboxes) ---------- */
+.bins{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.bin{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;
+  background:var(--card);border:2px solid var(--c);border-radius:12px 12px 10px 10px;padding:30px 10px 14px;
+  transition:transform .15s, background .15s}
+.bin::before{content:"";position:absolute;inset:0 0 auto 0;height:20px;background:var(--c);border-radius:8px 8px 0 0}
+.bin::after{content:"";position:absolute;top:7px;left:22%;right:22%;height:6px;border-radius:6px;background:var(--paper)}
+.bin svg{width:34px;height:34px;color:var(--c);stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bin-name{font-family:var(--f-display);font-size:clamp(1.15rem,1.9vw,1.55rem);color:var(--c)}
+.bin-desc{font-size:.84rem;color:var(--muted);line-height:1.35}
+.bin kbd{position:absolute;right:8px;bottom:6px;font-family:var(--f-num);font-size:.72rem;color:var(--muted);opacity:.8}
+.hide-hints .bin-desc{display:none}
+button.bin:hover{background:color-mix(in srgb,var(--c) 9%,var(--card));transform:translateY(-2px)}
+button.bin:disabled{cursor:default;transform:none}
+.bin.is-answer{background:color-mix(in srgb,var(--c) 18%,var(--card));animation:pulse 1s ease-in-out 2}
+.bin.is-wrong{opacity:.55}
+.bin.is-hit{transform:translateY(3px) scale(.98)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 30%,transparent)}}
+
+/* ---------- Play ---------- */
+#playScreen{height:100%}
+#play{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:14px;max-width:1280px;margin:0 auto}
+.hud{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.hud-left{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.quit{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:.9rem}
+.progress{font-weight:700}
+.progress .num{font-size:1.15rem}
+.scores{display:flex;gap:8px;flex-wrap:wrap}
+.score{display:flex;align-items:baseline;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:6px 12px}
+.score .lbl{font-size:.85rem;color:var(--muted);font-weight:700}
+.score .num{font-size:1.3rem;font-weight:600}
+.score.turn{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.score.turn .lbl{color:var(--ink)}
+.turn-tag{font-size:.72rem;background:var(--ink);color:var(--paper);border-radius:999px;padding:1px 7px;margin-left:2px}
+.timebar{height:8px;border-radius:8px;background:var(--paper-2);overflow:hidden;border:1px solid var(--line)}
+.timebar i{display:block;height:100%;background:var(--air-b);transform-origin:left;transition:background .3s}
+.timebar.low i{background:var(--air-r)}
+
+.stage{position:relative;display:grid;place-items:center;min-height:0;padding-block:6px}
+.postcard{width:min(760px,100%);padding:9px;border-radius:12px;box-shadow:var(--shadow);
+  background:repeating-linear-gradient(-45deg,var(--air-r) 0 16px,var(--card) 16px 24px,var(--air-b) 24px 40px,var(--card) 40px 48px);
+  transition:transform .42s cubic-bezier(.5,0,.75,0), opacity .42s}
+.postcard.enter{animation:enter .45s cubic-bezier(.2,.8,.3,1.1)}
+@keyframes enter{from{transform:translateY(-30px) rotate(-3deg);opacity:0}}
+.postcard.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.pc-inner{background:var(--card);border-radius:6px;padding:clamp(18px,3vw,32px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 24px}
+.pc-text{font-size:clamp(1.3rem,2.7vw,2.15rem);font-weight:500;line-height:1.45;margin:0;align-self:center;word-break:keep-all}
+.pc-side{display:flex;flex-direction:column;align-items:center;gap:12px}
+.stamp{width:78px;height:92px;padding:6px;background:var(--card);
+  border:2px dashed var(--line);border-radius:3px;display:grid;place-items:center}
+.stamp div{width:100%;height:100%;background:color-mix(in srgb,var(--air-b) 14%,var(--card));display:grid;place-items:center}
+.stamp svg{width:40px;height:40px;stroke:var(--air-b);fill:none;stroke-width:1.6}
+.postmark{width:96px;height:96px;border-radius:50%;border:2.5px double var(--muted);display:grid;place-items:center;text-align:center;
+  transform:rotate(-12deg);color:var(--muted);font-size:.78rem;font-weight:700;line-height:1.25;padding:8px}
+.postmark b{display:block;font-size:.66rem;letter-spacing:.12em;font-weight:500}
+.pc-foot{grid-column:1/-1;display:flex;align-items:flex-end;gap:10px;border-top:1.5px dashed var(--line);padding-top:12px;color:var(--muted);font-weight:700}
+.pc-foot .blank{flex:1;border-bottom:2px solid var(--line);min-height:1.6em;font-family:var(--f-display);font-size:1.3rem;color:var(--ink);font-weight:400}
+
+.fb{position:absolute;inset:6px 0;margin:auto;width:min(760px,100%);height:fit-content;max-height:100%;overflow:auto;background:var(--card);border-radius:14px;border:2px solid var(--line);
+  box-shadow:var(--shadow);padding:clamp(18px,3vw,30px);display:flex;flex-direction:column;gap:12px;animation:enter .3s ease-out}
+.fb.ok{border-color:var(--ok)} .fb.no{border-color:var(--no)}
+.fb-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.fb-stamp{font-family:var(--f-display);font-size:clamp(1.8rem,4vw,2.6rem);border:3px solid currentColor;border-radius:10px;padding:2px 14px;transform:rotate(-4deg)}
+.fb.ok .fb-stamp{color:var(--ok)} .fb.no .fb-stamp{color:var(--no)}
+.fb-pts{font-family:var(--f-num);font-size:1.3rem;font-weight:600}
+.fb-answer{font-size:clamp(1.15rem,2.2vw,1.5rem);margin:0;font-weight:700}
+.chip{display:inline-block;font-family:var(--f-display);font-weight:400;background:var(--c);color:var(--on-c);border-radius:8px;padding:0 10px;margin-right:4px}
+.fb-why{margin:0;font-size:clamp(1rem,1.8vw,1.2rem)}
+.fb-card{margin:0;color:var(--muted);border-left:3px solid var(--line);padding-left:12px}
+.next{align-self:flex-end;font-family:var(--f-display);font-size:1.3rem;border:0;border-radius:10px;padding:10px 20px;background:var(--ink);color:var(--paper)}
+.next small{font-family:var(--f-body);font-size:.75rem;opacity:.7;margin-left:6px}
+
+/* ---------- Results ---------- */
+.res-head{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.res-head h1{font-size:clamp(2.2rem,5vw,3.4rem)}
+.big{display:flex;gap:12px;flex-wrap:wrap}
+.big .score{padding:10px 16px}
+.big .score .num{font-size:2rem}
+.podium{display:flex;flex-direction:column;gap:8px}
+.podium .row{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 16px}
+.podium .rank{font-family:var(--f-display);font-size:1.6rem;width:2.2em}
+.podium .row:first-child{border-color:var(--air-r);box-shadow:0 0 0 2px var(--air-r)}
+.podium .name{font-family:var(--f-display);font-size:1.3rem;flex:1}
+.podium .num{font-size:1.4rem;font-weight:600}
+.res-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:start}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar-row{display:grid;grid-template-columns:6.5em minmax(0,1fr) 4.2em;gap:10px;align-items:center}
+.bar-row .n{font-family:var(--f-display);color:var(--c);font-size:1.1rem}
+.bar-track{height:14px;background:var(--paper-2);border-radius:8px;overflow:hidden}
+.bar-track i{display:block;height:100%;background:var(--c);border-radius:8px}
+.bar-row .num{text-align:right;color:var(--muted)}
+.misses{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.misses li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.misses .mt{font-weight:500}
+.misses .ma{font-size:.92rem;color:var(--muted)}
+.empty{color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.ghost{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:12px 18px;font-weight:700}
+
+@media (max-width:860px){
+  .intro,.res-grid{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .bins{grid-template-columns:1fr;gap:8px}
+  .bin{flex-direction:row;padding:10px 12px 10px 26px;text-align:left;gap:10px;border-radius:10px}
+  .bin::before{inset:0 auto 0 0;width:14px;height:auto;border-radius:8px 0 0 8px}
+  .bin::after{display:none}
+  .bin svg{width:26px;height:26px}
+  .bin-desc{font-size:.8rem}
+  .bin kbd{display:none}
+  .pc-inner{grid-template-columns:1fr}
+  .pc-side{flex-direction:row;justify-content:space-between}
+  .stamp{width:60px;height:70px}
+  .postmark{width:80px;height:80px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP ============ -->
+<section class="screen" id="setup">
+  <div class="wrap">
+    <a class="back" href="./">← 자료 목록으로</a>
+    <div class="intro">
+      <div>
+        <div class="eyebrow">6학년 2학기 사회 · 3단원 지구촌 사람들 · 지속가능한 미래를 위한 노력</div>
+        <h1>지구촌 <span>우편함</span></h1>
+        <p class="lede">지속가능한 미래를 위한 노력이 적힌 엽서가 도착했어요. 누가 한 노력인지 생각해서 알맞은 우편함에 넣어 주세요.</p>
+        <ul class="howto">
+          <li><b>1</b>엽서를 읽고, 그 노력을 한 주체를 고릅니다.</li>
+          <li><b>2</b>맞히면 10점, 시간 제한이 있으면 남은 초만큼 보너스를 받아요.</li>
+          <li><b>3</b>틀린 엽서는 마지막에 다시 확인할 수 있어요.</li>
+          <li><b>⌨</b>키보드 1~5로 우편함 선택, Enter로 다음 엽서</li>
+        </ul>
+      </div>
+      <div class="panel" role="group" aria-label="게임 설정">
+        <h2>게임 설정</h2>
+        <div class="field"><span>게임 방식</span>
+          <div class="seg" data-key="mode">
+            <button type="button" data-v="solo">혼자 연습</button>
+            <button type="button" data-v="team">모둠 대항전</button>
+          </div>
+        </div>
+        <div class="field" id="teamField"><span>모둠 수 (엽서를 번갈아 분류해요)</span>
+          <div class="seg" data-key="teams">
+            <button type="button" data-v="2">2모둠</button>
+            <button type="button" data-v="3">3모둠</button>
+            <button type="button" data-v="4">4모둠</button>
+            <button type="button" data-v="5">5모둠</button>
+            <button type="button" data-v="6">6모둠</button>
+          </div>
+        </div>
+        <div class="field"><span>엽서 수</span>
+          <div class="seg" data-key="count">
+            <button type="button" data-v="10">10장</button>
+            <button type="button" data-v="15">15장</button>
+            <button type="button" data-v="20">20장</button>
+            <button type="button" data-v="99">전체</button>
+          </div>
+        </div>
+        <div class="field"><span>엽서 한 장당 시간</span>
+          <div class="seg" data-key="timer">
+            <button type="button" data-v="0">제한 없음</button>
+            <button type="button" data-v="20">20초</button>
+            <button type="button" data-v="10">10초</button>
+          </div>
+        </div>
+        <div class="toggles">
+          <label><input type="checkbox" id="optHints"> 우편함 설명 보이기</label>
+          <label><input type="checkbox" id="optSound"> 효과음</label>
+        </div>
+        <button class="start" id="startBtn" type="button">분류 시작하기</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3 class="legend-title">다섯 개의 우편함 <small>지속가능한 미래를 위해 노력하는 주체예요</small></h3>
+      <div class="bins" id="legendBins"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAY ============ -->
+<section class="screen" id="playScreen" hidden>
+  <div id="play">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="hud">
+        <div class="hud-left">
+          <button class="quit" id="quitBtn" type="button">← 처음으로</button>
+          <div class="progress">엽서 <span class="num" id="prog">1 / 15</span></div>
+        </div>
+        <div class="scores" id="scores"></div>
+      </div>
+      <div class="timebar" id="timebar" hidden><i id="timefill"></i></div>
+    </div>
+    <div class="stage" id="stage">
+      <div class="postcard" id="postcard">
+        <div class="pc-inner">
+          <p class="pc-text" id="pcText"></p>
+          <div class="pc-side">
+            <div class="stamp"><div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.8 5.8 3.8 9s-1.2 6.2-3.8 9c-2.6-2.8-3.8-5.8-3.8-9S9.4 5.8 12 3z"/></svg></div></div>
+            <div class="postmark"><div><b>지구촌 문제</b><span id="pcTag"></span></div></div>
+          </div>
+          <div class="pc-foot">보낸 이 <span class="blank" id="pcFrom"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="bins" id="playBins"></div>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section class="screen" id="resultScreen" hidden>
+  <div class="wrap">
+    <div class="res-head">
+      <div>
+        <div class="eyebrow">분류 완료</div>
+        <h1 id="resTitle">모든 엽서를 배달했어요!</h1>
+      </div>
+      <div class="actions">
+        <button class="start" id="againBtn" type="button">한 번 더 하기</button>
+        <button class="ghost" id="homeBtn" type="button">설정 바꾸기</button>
+      </div>
+    </div>
+    <div id="resTop"></div>
+    <div class="res-grid">
+      <div class="panel">
+        <h2>주체별 정답률</h2>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="panel">
+        <h2 id="missTitle">다시 살펴볼 엽서</h2>
+        <ul class="misses" id="misses"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const CATS = {
+  person:  {name:'개인',       desc:'일상생활 속 실천',            icon:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5c.6-4 3.4-6.5 7-6.5s6.4 2.5 7 6.5"/>'},
+  company: {name:'기업',       desc:'친환경 제품·기술, 책임 경영',  icon:'<path d="M3 20.5V11l5 3v-3l5 3V5h4v15.5z"/><path d="M2 20.5h20M17 9h0"/>'},
+  nation:  {name:'국가',       desc:'법·제도·정책, 국제 협약',      icon:'<path d="M5 21V3.5"/><path d="M5 4h12l-2.5 4L17 12H5"/>'},
+  intl:    {name:'국제기구',   desc:'세계 여러 나라로 구성',         icon:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.8 5.8 3.8 9s-1.2 6.2-3.8 9c-2.6-2.8-3.8-5.8-3.8-9S9.4 5.8 12 3z"/>'},
+  ngo:     {name:'비정부 기구', desc:'개인·민간단체가 중심',         icon:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'}
+};
+const ORDER = ['person','company','nation','intl','ngo'];
+
+const CARDS = [
+  // 개인
+  {c:'person', p:'자원과 에너지', t:'다 쓴 페트병의 라벨을 떼고 분리배출해요.', w:'일상생활에서 쓰레기를 분리배출하고 재활용하는 것은 내가 직접 할 수 있는 개인의 노력이에요.'},
+  {c:'person', p:'자원과 에너지', t:'카페에서 종이컵 대신 다회용 컵을 사용해요.', w:'일회용품 사용을 줄이는 것은 개인의 노력이에요.'},
+  {c:'person', p:'자원과 에너지', t:'양치할 때 컵에 물을 받아 써서 물을 아껴요.', w:'물 적게 쓰기처럼 자원을 아끼는 생활 습관은 개인의 노력이에요.'},
+  {c:'person', p:'기후변화', t:'방에서 나갈 때 쓰지 않는 전등을 꺼요.', w:'안 쓰는 전등 끄기처럼 에너지를 아끼는 습관은 개인의 노력이에요.'},
+  {c:'person', p:'생태계 파괴', t:'숲에 놀러 가서 나뭇가지를 꺾거나 동물이 사는 곳을 망가뜨리지 않아요.', w:'동식물이 살아가는 곳을 함부로 훼손하지 않는 것은 개인의 노력이에요.'},
+  {c:'person', p:'자원과 에너지', t:'새 옷이 싸고 예뻐도 꼭 필요할 때만 사요.', w:'충동적으로 옷을 사지 않는 소비 습관은 개인의 노력이에요. 면 티셔츠 한 벌을 만드는 데 물이 약 2,700 L나 필요해요.'},
+  {c:'person', p:'기후변화', t:'3월 마지막 주 토요일, 한 시간 동안 우리 집 불을 끄는 캠페인에 참여해요.', w:'지구촌 전등 끄기 캠페인에 참여하는 것은 개인의 노력이에요.'},
+  {c:'person', p:'기후변화', t:'물건을 살 때 자원과 에너지를 적게 써서 만든 녹색 제품을 골라요.', w:'녹색 제품을 소비하는 것은 개인의 노력이에요. 녹색 제품을 만드는 것은 기업의 몫이고, 고르는 것은 개인의 몫이에요.'},
+
+  // 기업
+  {c:'company', p:'자원과 에너지', t:'버려진 플라스틱을 재활용해서 운동화를 만들어 팔아요.', w:'재활용 소재로 제품을 생산하는 것은 기업의 노력이에요.'},
+  {c:'company', p:'자원과 에너지', t:'생수병의 라벨을 없애고 플라스틱 뚜껑의 크기를 줄였어요.', w:'자원을 적게 사용한 제품을 생산하는 것은 기업의 노력이에요.'},
+  {c:'company', p:'생태계 파괴', t:'자연에서 잘 분해되는 친환경 소재를 만드는 기술을 개발해요.', w:'친환경 소재 제품을 만드는 기술을 개발하는 것은 기업의 노력이에요.'},
+  {c:'company', p:'기후변화', t:'공장에서 나오는 탄소를 줄일 수 있는 새 설비를 들여와요.', w:'탄소 배출을 줄이려고 책임 있는 경영을 하는 것은 기업의 노력이에요.'},
+  {c:'company', p:'기후변화', t:'전기를 적게 쓰는 냉장고를 개발해서 판매해요.', w:'탄소 배출을 줄일 수 있는 제품을 개발하는 것은 기업의 노력이에요.'},
+  {c:'company', p:'자원과 에너지', t:'다 쓴 페트병에서 뽑아낸 실로 옷을 만들어 판매해요.', w:'버려진 물건을 활용해 제품을 만드는 것은 기업의 노력이에요.'},
+  {c:'company', p:'자원과 에너지', t:'택배 상자를 포장할 때 비닐 대신 종이 완충재를 사용해요.', w:'쓰레기를 줄이는 포장 방식으로 바꾸는 것은 기업의 노력이에요.'},
+  {c:'company', p:'생태계 파괴', t:'공장을 지을 때 주변 숲과 하천의 생태계를 지키는 방법을 찾아요.', w:'생태계 보존을 위해 노력하는 책임 있는 경영은 기업의 노력이에요.'},
+
+  // 국가
+  {c:'nation', p:'기후변화', t:'기후변화 협약에 가입하고 탄소 배출을 줄이는 목표를 세워요.', w:'국제 협약에 가입하고 탄소를 줄이는 목표를 세우는 것은 국가의 노력이에요.'},
+  {c:'nation', p:'난민', t:'전쟁을 피해 온 사람들을 위해 난민 보호 시설을 마련해요.', w:'난민 보호 시설을 마련하는 것은 국가의 노력이에요.'},
+  {c:'nation', p:'난민', t:'우리나라에 온 난민들이 우리 사회에 잘 적응하도록 돕는 제도를 만들어요.', w:'난민이 우리 사회에 적응하도록 돕는 것은 국가의 노력이에요.'},
+  {c:'nation', p:'자원과 에너지', t:'일회용품 사용을 줄이도록 법을 만들어요.', w:'지구촌 문제에 대응해 법과 제도를 마련하는 것은 국가의 노력이에요.'},
+  {c:'nation', p:'기후변화', t:'세계 여러 나라와 함께 맺은 국제 협약을 잘 지켜요.', w:'국제 협약을 지키는 것은 국가의 노력이에요. 협약을 맺고 지키는 주체는 각 나라랍니다.'},
+  {c:'nation', p:'기후변화', t:'전기차를 사는 국민에게 보조금을 주는 정책을 펼쳐요.', w:'개인이 지구촌 문제 해결에 참여할 수 있도록 돕는 정책은 국가의 노력이에요.'},
+  {c:'nation', p:'생태계 파괴', t:'멸종 위기 동물이 사는 지역을 보호 구역으로 정해요.', w:'법과 제도로 생태계를 지키는 것은 국가의 노력이에요.'},
+  {c:'nation', p:'기후변화', t:'탄소를 줄이는 기술을 개발하는 기업을 지원하는 정책을 만들어요.', w:'기업이 지구촌 문제 해결에 참여할 수 있도록 돕는 정책은 국가의 노력이에요.'},
+
+  // 국제기구
+  {c:'intl', p:'평화와 안전', t:'국제 연합(UN)이 국제 평화와 안전을 지키려고 세계 여러 나라의 협력을 이끌어요.', w:'국제 연합(UN)은 세계 여러 나라로 구성된 대표적인 국제기구예요.'},
+  {c:'intl', p:'난민', t:'국제 연합 난민 기구(UNHCR)가 난민에게 생활 물품, 의료, 교육을 제공해요.', w:'국제 연합 난민 기구(UNHCR)는 국제 연합에 속한 국제기구예요.'},
+  {c:'intl', p:'어린이 보호', t:'국제 연합 아동 기금(UNICEF)이 전쟁이나 가난으로 어려움을 겪는 어린이에게 식량과 교육을 제공해요.', w:'국제 연합 아동 기금(UNICEF)은 국제 연합에 속한 국제기구예요.'},
+  {c:'intl', p:'어린이 보호', t:'국제 연합 아동 기금(UNICEF)이 어려운 나라의 어린이들에게 예방 접종을 지원해요.', w:'이름에 \'국제 연합\'이 들어 있지요? UNICEF는 세계 여러 나라로 구성된 국제기구예요.'},
+  {c:'intl', p:'평화와 안전', t:'세계 여러 나라가 모여 만든 기구가 국제법과 질서를 지키도록 힘써요.', w:'세계 여러 나라로 구성되어 국제법과 질서를 지키는 것은 국제기구의 노력이에요.'},
+  {c:'intl', p:'지속가능한 미래', t:'국제 연합(UN)이 지속가능발전목표(SDGs)를 정해 세계 여러 나라가 함께 실천하도록 해요.', w:'국제 연합이 세계 여러 나라의 공동 목표를 정하는 것은 국제기구의 노력이에요.'},
+  {c:'intl', p:'기후변화', t:'국제 연합(UN)이 여러 나라 대표가 모여 기후변화 해결 방법을 논의하는 회의를 열어요.', w:'여러 나라가 함께 해결 방안을 마련하도록 이끄는 것은 국제기구의 노력이에요. 협약을 지키는 것은 각 국가의 몫이에요.'},
+
+  // 비정부 기구
+  {c:'ngo', p:'난민', t:'국경 없는 의사회가 전쟁, 질병, 자연재해로 고통받는 사람들에게 차별 없이 의료를 제공해요.', w:'국경 없는 의사회는 민간단체가 중심이 되어 만든 비정부 기구예요.'},
+  {c:'ngo', p:'생태계 파괴', t:'세계 자연 기금이 생물 다양성을 보전하고 기후변화에 대응하는 활동을 해요.', w:'세계 자연 기금은 비정부 기구예요. 이름에 \'세계\'가 들어가도 여러 나라 정부가 모여 만든 기구는 아니에요.'},
+  {c:'ngo', p:'생태계 파괴', t:'그린피스가 환경을 연구하고 해양 생태계를 보호하는 활동을 해요.', w:'그린피스는 개인과 민간단체가 중심이 된 비정부 기구예요.'},
+  {c:'ngo', p:'생태계 파괴', t:'시민들이 모여 만든 환경 단체가 바닷가 쓰레기 줍기 행사를 열어요.', w:'개인이나 민간단체가 공공의 이익을 지키려고 만든 단체는 비정부 기구예요.'},
+  {c:'ngo', p:'기후변화', t:'민간단체가 모금 활동을 벌여 가뭄을 겪는 마을에 우물을 만들어요.', w:'정부가 아닌 민간단체가 중심이 되어 활동하므로 비정부 기구의 노력이에요.'},
+  {c:'ngo', p:'생태계 파괴', t:'시민 단체가 멸종 위기 동물을 지키자는 서명 운동을 벌여요.', w:'시민 단체는 공공의 이익을 위해 활동하는 비정부 기구예요.'},
+  {c:'ngo', p:'난민', t:'국경 없는 의사회가 난민촌에 병원을 세우고 아픈 사람들을 치료해요.', w:'국경 없는 의사회는 비정부 기구예요. 난민을 돕더라도 UNHCR(국제기구)과는 다른 단체예요.'}
+];
+
+/* ---------- settings ---------- */
+const DEFAULTS = {mode:'solo', teams:'4', count:'15', timer:'0', hints:true, sound:true};
+let S = {...DEFAULTS};
+try { const saved = JSON.parse(localStorage.getItem('gm-settings')||'null'); if (saved) S = {...S, ...saved}; } catch(e){}
+function saveS(){ try{ localStorage.setItem('gm-settings', JSON.stringify(S)); }catch(e){} }
+
+const $ = s => document.querySelector(s);
+const optHints = $('#optHints'), optSound = $('#optSound');
+
+function binHTML(c, i, asButton){
+  const k = CATS[c];
+  const tag = asButton ? 'button' : 'div';
+  return `<${tag} class="bin" ${asButton?`type="button" data-c="${c}" aria-label="${k.name} 우편함 (${i+1}번)"`:''} style="--c:var(--c-${c})">
+    <svg viewBox="0 0 24 24" aria-hidden="true">${k.icon}</svg>
+    <span><span class="bin-name">${k.name}</span><br><span class="bin-desc">${k.desc}</span></span>
+    ${asButton?`<kbd>${i+1}</kbd>`:''}
+  </${tag}>`;
+}
+$('#legendBins').innerHTML = ORDER.map((c,i)=>binHTML(c,i,false)).join('');
+$('#playBins').innerHTML = ORDER.map((c,i)=>binHTML(c,i,true)).join('');
+
+function renderSetup(){
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const key = seg.dataset.key;
+    seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.v===String(S[key]))));
+  });
+  $('#teamField').hidden = S.mode!=='team';
+  optHints.checked = S.hints; optSound.checked = S.sound;
+  document.body.classList.toggle('hide-hints', !S.hints);
+}
+document.querySelectorAll('.seg').forEach(seg=>{
+  seg.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    S[seg.dataset.key] = b.dataset.v; saveS(); renderSetup();
+  });
+});
+optHints.addEventListener('change',()=>{S.hints=optHints.checked;saveS();renderSetup();});
+optSound.addEventListener('change',()=>{S.sound=optSound.checked;saveS();});
+renderSetup();
+
+/* ---------- sound ---------- */
+let AC = null;
+function beep(ok){
+  if(!S.sound) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = ok ? [660, 990] : [300, 220];
+    notes.forEach((f,i)=>{
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = ok ? 'triangle' : 'square'; o.frequency.value = f;
+      const t = AC.currentTime + i*0.11;
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(ok?0.18:0.07,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.16);
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t+0.18);
+    });
+  }catch(e){}
+}
+
+/* ---------- game ---------- */
+let G = null, raf = 0, autoT = 0;
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+function buildDeck(n, teams){
+  const pools = ORDER.map(c=>shuffle(CARDS.filter(x=>x.c===c)));
+  n = Math.min(n, CARDS.length);
+  if (teams>1) n = Math.max(teams, Math.floor(n/teams)*teams);
+  const deck = []; let k = 0;
+  while(deck.length<n){ const pool = pools[k%5]; if(pool.length) deck.push(pool.pop()); k++; if(k>500) break; }
+  return shuffle(deck);
+}
+
+function show(id){
+  ['setup','playScreen','resultScreen'].forEach(s=>$('#'+s).hidden = s!==id);
+  window.scrollTo(0,0);
+}
+
+function startGame(){
+  const teams = S.mode==='team' ? +S.teams : 1;
+  G = { teams, deck: buildDeck(+S.count, teams), i:0, scores:Array(teams).fill(0), correct:Array(teams).fill(0),
+        streak:0, best:0, log:[], turn:0, locked:false, timer:+S.timer, left:+S.timer };
+  show('playScreen');
+  $('#timebar').hidden = !G.timer;
+  showCard();
+}
+
+function teamName(t){ return G.teams>1 ? `${t+1}모둠` : '나'; }
+
+function renderHUD(){
+  $('#prog').textContent = `${G.i+1} / ${G.deck.length}`;
+  if (G.teams===1){
+    $('#scores').innerHTML = `<div class="score"><span class="lbl">점수</span><span class="num">${G.scores[0]}</span></div>
+      <div class="score"><span class="lbl">연속 정답</span><span class="num">${G.streak}</span></div>`;
+  } else {
+    $('#scores').innerHTML = G.scores.map((s,t)=>`<div class="score ${t===G.turn?'turn':''}"><span class="lbl">${t+1}모둠${t===G.turn?'<span class="turn-tag">차례</span>':''}</span><span class="num">${s}</span></div>`).join('');
+  }
+}
+
+function setBins(enabled){
+  document.querySelectorAll('#playBins .bin').forEach(b=>{ b.disabled = !enabled; if(enabled) b.classList.remove('is-answer','is-wrong','is-hit'); });
+}
+
+function showCard(){
+  clearTimeout(autoT);
+  const card = G.deck[G.i];
+  const fb = $('#stage .fb'); if (fb) fb.remove();
+  const pc = $('#postcard');
+  pc.hidden = false;
+  pc.style.transition = 'none'; pc.style.transform = ''; pc.style.opacity = '';
+  void pc.offsetWidth; pc.style.transition = '';
+  pc.classList.remove('enter','shake'); void pc.offsetWidth; pc.classList.add('enter');
+  $('#pcText').textContent = card.t;
+  $('#pcTag').textContent = card.p;
+  $('#pcFrom').textContent = '';
+  G.locked = false;
+  setBins(true);
+  renderHUD();
+  if (G.timer){ G.left = G.timer; G.t0 = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }
+}
+
+function tick(now){
+  if (G.locked) return;
+  G.left = Math.max(0, G.timer - (now - G.t0)/1000);
+  const f = G.left / G.timer;
+  $('#timefill').style.transform = `scaleX(${f})`;
+  $('#timebar').classList.toggle('low', G.left <= 3);
+  if (G.left<=0){ choose(null); return; }
+  raf = requestAnimationFrame(tick);
+}
+
+function choose(cat){
+  if (!G || G.locked) return;
+  G.locked = true; cancelAnimationFrame(raf);
+  const card = G.deck[G.i];
+  const ok = cat === card.c;
+  const pts = ok ? 10 + (G.timer ? Math.ceil(G.left) : 0) : 0;
+  G.scores[G.turn] += pts;
+  if (ok){ G.correct[G.turn]++; G.streak++; G.best = Math.max(G.best, G.streak); } else G.streak = 0;
+  G.log.push({card, chose:cat, ok, team:G.turn});
+  beep(ok);
+
+  const bins = [...document.querySelectorAll('#playBins .bin')];
+  bins.forEach(b=>{ b.disabled = true; if (b.dataset.c===card.c) b.classList.add('is-answer'); else if (b.dataset.c===cat) b.classList.add('is-wrong'); });
+  const pc = $('#postcard');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let delay = 0;
+  if (ok){
+    $('#pcFrom').textContent = CATS[card.c].name;
+    const target = bins.find(b=>b.dataset.c===cat);
+    target.classList.add('is-hit');
+    if (!reduce){
+      const a = pc.getBoundingClientRect(), b = target.getBoundingClientRect();
+      const dx = (b.left+b.width/2) - (a.left+a.width/2), dy = (b.top+b.height/2) - (a.top+a.height/2);
+      pc.classList.remove('enter');
+      setTimeout(()=>{ pc.style.transform = `translate(${dx}px,${dy}px) scale(.12) rotate(-10deg)`; pc.style.opacity = '0'; }, 260);
+      delay = 700;
+    }
+  } else {
+    pc.classList.remove('enter'); void pc.offsetWidth; pc.classList.add('shake');
+    delay = reduce ? 0 : 450;
+  }
+  renderHUD();
+  setTimeout(()=>showFeedback(card, cat, ok, pts), delay);
+}
+
+function showFeedback(card, cat, ok, pts){
+  if (!G || $('#playScreen').hidden) return;
+  const pc = $('#postcard');
+  if (ok) pc.hidden = true;
+  const last = G.i === G.deck.length-1;
+  const who = G.teams>1 ? `${teamName(G.turn)} ` : '';
+  const stamp = ok ? '정답!' : (cat===null ? '시간 초과' : '아쉬워요');
+  const fb = document.createElement('div');
+  fb.className = 'fb ' + (ok?'ok':'no');
+  fb.setAttribute('role','status');
+  fb.innerHTML = `
+    <div class="fb-top"><span class="fb-stamp">${stamp}</span><span class="fb-pts">${who}+${pts}점</span></div>
+    <p class="fb-answer"><span class="chip" style="--c:var(--c-${card.c})">${CATS[card.c].name}</span>의 노력이에요.</p>
+    <p class="fb-why">${card.w}</p>
+    ${ok?'':`<p class="fb-card">“${card.t}”${cat?`<br>고른 우편함: ${CATS[cat].name}`:''}</p>`}
+    <button class="next" type="button">${last?'결과 보기':'다음 엽서'} →<small>Enter</small></button>`;
+  if (!ok) pc.hidden = true;
+  $('#stage').appendChild(fb);
+  const btn = fb.querySelector('.next');
+  btn.addEventListener('click', next);
+  btn.focus({preventScroll:true});
+  if (ok && G.teams===1 && !last) autoT = setTimeout(next, 2200);
+}
+
+function next(){
+  clearTimeout(autoT);
+  if (!G || !$('#stage .fb')) return;
+  G.i++;
+  if (G.i >= G.deck.length){ showResults(); return; }
+  G.turn = (G.turn+1) % G.teams;
+  showCard();
+}
+
+function showResults(){
+  show('resultScreen');
+  const total = G.deck.length, right = G.log.filter(l=>l.ok).length;
+  if (G.teams===1){
+    const pct = Math.round(right/total*100);
+    $('#resTitle').textContent = pct===100 ? '모든 엽서를 정확히 배달했어요!' : pct>=70 ? '우편 배달 실력이 훌륭해요!' : '틀린 엽서를 살펴보고 다시 도전해요!';
+    $('#resTop').innerHTML = `<div class="big">
+      <div class="score"><span class="lbl">점수</span><span class="num">${G.scores[0]}</span></div>
+      <div class="score"><span class="lbl">맞힌 엽서</span><span class="num">${right} / ${total}</span></div>
+      <div class="score"><span class="lbl">최고 연속 정답</span><span class="num">${G.best}</span></div></div>`;
+  } else {
+    const rank = G.scores.map((s,t)=>({s,t,c:G.correct[t]})).sort((a,b)=>b.s-a.s);
+    const per = total / G.teams;
+    $('#resTitle').textContent = `${rank[0].t+1}모둠이 가장 많은 점수를 모았어요!`;
+    $('#resTop').innerHTML = `<div class="podium">${rank.map((r,i)=>{
+      const place = i>0 && r.s===rank[i-1].s ? '' : `${i+1}위`;
+      return `<div class="row"><span class="rank">${place}</span><span class="name">${r.t+1}모둠</span><span class="lbl" style="color:var(--muted)">맞힌 엽서 ${r.c} / ${per}</span><span class="num">${r.s}점</span></div>`;}).join('')}</div>`;
+  }
+  $('#bars').innerHTML = ORDER.map(c=>{
+    const rows = G.log.filter(l=>l.card.c===c); const ok = rows.filter(l=>l.ok).length;
+    const pct = rows.length ? ok/rows.length*100 : 0;
+    return `<div class="bar-row" style="--c:var(--c-${c})"><span class="n">${CATS[c].name}</span>
+      <span class="bar-track"><i style="width:${pct}%"></i></span><span class="num">${rows.length? `${ok}/${rows.length}`:'-'}</span></div>`;
+  }).join('');
+  const miss = G.log.filter(l=>!l.ok);
+  $('#missTitle').textContent = miss.length ? `다시 살펴볼 엽서 ${miss.length}장` : '다시 살펴볼 엽서';
+  $('#misses').innerHTML = miss.length ? miss.map(l=>`<li>
+      <span class="mt">“${l.card.t}”</span>
+      <span class="ma"><span class="chip" style="--c:var(--c-${l.card.c})">${CATS[l.card.c].name}</span> ${l.chose?`(고른 답: ${CATS[l.chose].name})`:'(시간 초과)'}${G.teams>1?` · ${l.team+1}모둠`:''}</span>
+      <span class="ma">${l.card.w}</span></li>`).join('')
+    : '<li class="empty">틀린 엽서가 하나도 없어요. 모든 주체를 정확히 구분했어요!</li>';
+}
+
+/* ---------- events ---------- */
+$('#startBtn').addEventListener('click', startGame);
+$('#againBtn').addEventListener('click', startGame);
+$('#homeBtn').addEventListener('click', ()=>{ G=null; show('setup'); });
+$('#quitBtn').addEventListener('click', ()=>{ cancelAnimationFrame(raf); clearTimeout(autoT); G=null; show('setup'); });
+$('#playBins').addEventListener('click', e=>{ const b = e.target.closest('.bin'); if (b && !b.disabled) choose(b.dataset.c); });
+document.addEventListener('keydown', e=>{
+  if ($('#playScreen').hidden || !G) return;
+  if (!G.locked && /^[1-5]$/.test(e.key)){ choose(ORDER[+e.key-1]); e.preventDefault(); }
+  else if (G.locked && (e.key==='Enter' || e.key===' ') && $('#stage .fb')){ e.preventDefault(); next(); }
+});
+</script>
+</body>
+</html>
